@@ -32,4 +32,22 @@ const register = async (req, res)=>{
     }
 };
 
-module.exports = { register };
+// Login Route
+const login = async (req, res)=>{
+    const { email, password }= req.body;
+
+    const user = await Prisma.user.findUnique({ where: { email } });
+    if(!user){
+        return res.status(400).json({ message: 'Email or Password are incorrect.' })
+    }
+
+    const hashPassword = await bcrypt.compare(password, user.password);
+    if(!hashPassword){
+        return res.status(400).json({ message: 'Email or Password are incorrect.' });
+    }
+
+    const token = jwt.sign({ userId: user.id, userRole: user.role }, process.env.SECRET_KEY, { expiresIn: '1h' });
+    res.status(200).json({ message: 'User Login Successfully.', user: { id: user.id, email: user.email, role: user.role }, token });
+};
+
+module.exports = { register, login };
