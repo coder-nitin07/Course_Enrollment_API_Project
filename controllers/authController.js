@@ -45,7 +45,7 @@ const login = async (req, res)=>{
     if(!hashPassword){
         return res.status(400).json({ message: 'Email or Password are incorrect.' });
     }
-
+    console.log(user);
     const token = jwt.sign({ userId: user.id, userRole: user.role }, process.env.SECRET_KEY, { expiresIn: '1h' });
     res.status(200).json({ message: 'User Login Successfully.', user: { id: user.id, email: user.email, role: user.role }, token });
 };
