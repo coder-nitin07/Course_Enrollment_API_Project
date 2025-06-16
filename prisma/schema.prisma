@@ -33,7 +33,7 @@ model TeacherProfile{
   bio           String
   expertise     String
   experience    String
-  linkdin       String?
+  linkedin      String?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 }

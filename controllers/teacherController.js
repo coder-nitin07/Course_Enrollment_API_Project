@@ -4,10 +4,31 @@
 // PUT /teacher/course/:id (update course)
 // DELETE /teacher/course/:id (delete course)
 
+const prisma = require("../config/prisma");
+
 // Create Teacher
 const onboardTeacher = async (req, res)=>{
     try {
-        
+        const teacherId = req.user.id;
+
+        const existingTeacher = await prisma.teacherProfile.findUnique({ where: { teacherId } });
+        if(existingTeacher){
+            return res.status(400).json({ message: 'Teacher already exist' });
+        }
+
+        const { bio, expertise, experience, linkedin } = req.body;
+
+        const teacherProfile = await prisma.teacherProfile.create({ 
+            data: {
+                teacherId,
+                bio,
+                expertise,
+                experience,
+                linkedin
+            }
+         })
+
+         res.status(201).json({ message: 'Teacher Profile Created', profile: teacherProfile });
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: 'Something went wrong' });
