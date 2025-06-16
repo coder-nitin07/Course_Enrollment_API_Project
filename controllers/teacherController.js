@@ -91,6 +91,29 @@ const updateCourse = async (req, res)=>{
     }
 };
 
+// Delete Course
+const deleteCourse = async (req, res)=>{
+    try {
+        const teacher = req.user.userId;
+        const id = Number(req.params.id);
+
+        const existingCourse = await prisma.course.findUnique({ where: { id } }); 
+        if(!existingCourse){
+            return res.status(404).json({ message: 'Course not found' });
+        }
+
+        if (existingCourse.teacherId !== teacher) {
+            return res.status(403).json({ message: 'You are not authorized to update this course, You can only Delete your own courses.' });
+        }
+
+        const deletedCourse = await prisma.course.delete({ where: { id } });
+        res.status(200).json({ message: 'Course Deleted Successfully', course: deletedCourse });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
 // Get All course of a Teacher
 const getAllCourseOfTeacher = async (req, res)=>{
     try {
@@ -113,4 +136,4 @@ const getAllCourseOfTeacher = async (req, res)=>{
     }
 };
 
-module.exports = { onboardTeacher, createCourse, updateCourse, getAllCourseOfTeacher };
+module.exports = { onboardTeacher, createCourse, updateCourse, deleteCourse, getAllCourseOfTeacher };
