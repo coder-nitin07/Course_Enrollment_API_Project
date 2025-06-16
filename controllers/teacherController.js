@@ -11,8 +11,6 @@ const onboardTeacher = async (req, res)=>{
     try {
         const teacherId = req.user.userId;
 
-        console.log(req.user, "dfsdkf");
-
         const existingTeacher = await prisma.teacherProfile.findUnique({ where: { userId: teacherId } });
         if(existingTeacher){
             return res.status(400).json({ message: 'Teacher already exist' });
@@ -37,4 +35,30 @@ const onboardTeacher = async (req, res)=>{
     }
 };
 
-module.exports = { onboardTeacher };
+// Create course for the students by Teacher
+const createCourse = async (req, res)=>{
+    try {
+        const teacher = req.user.userId;
+
+        const getTeacher = await prisma.teacherProfile.findUnique({ where: { userId: teacher } });
+        if(!getTeacher){
+            return res.status(404).json({ message: 'Teacher not found' });
+        }
+
+        const { title, description } = req.body;
+        const course = await prisma.course.create({
+            data: {
+                title,
+                description,
+                teacherId: teacher
+            }
+        });
+
+        res.status(201).json({ message: 'New Course Created', course });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+module.exports = { onboardTeacher, createCourse };
