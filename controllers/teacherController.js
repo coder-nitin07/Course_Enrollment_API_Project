@@ -61,4 +61,26 @@ const createCourse = async (req, res)=>{
     }
 };
 
-module.exports = { onboardTeacher, createCourse };
+// Get All course of a Teacher
+const getAllCourseOfTeacher = async (req, res)=>{
+    try {
+        const teacher = req.user.userId;
+
+        const getTeacher = await prisma.teacherProfile.findUnique({ where: { userId: teacher } });
+        if(!getTeacher){
+            return res.status(404).json({ message: 'Teacher not found' });
+        }
+
+        const getAllCourse = await prisma.course.findMany({ where: { teacherId: teacher } });
+        if(getAllCourse.length === 0){
+            return res.status(404).json({ message: 'No Course found' });
+        }
+        
+        res.status(200).json({ message: "Get All Course", courses: getAllCourse });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+module.exports = { onboardTeacher, createCourse, getAllCourseOfTeacher };
