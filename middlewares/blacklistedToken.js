@@ -14,7 +14,6 @@ const blacklistedToken = async (req, res, next)=>{
             where: { token }
         });
         
-        console.log("s", isBlacklistToken)
         if(isBlacklistToken){
             return res.status(400).json({ message: 'Token Already Blacklisted. Please login again.' });
         }
