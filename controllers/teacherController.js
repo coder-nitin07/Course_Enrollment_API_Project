@@ -9,9 +9,11 @@ const prisma = require("../config/prisma");
 // Create Teacher
 const onboardTeacher = async (req, res)=>{
     try {
-        const teacherId = req.user.id;
+        const teacherId = req.user.userId;
 
-        const existingTeacher = await prisma.teacherProfile.findUnique({ where: { teacherId } });
+        console.log(req.user, "dfsdkf");
+
+        const existingTeacher = await prisma.teacherProfile.findUnique({ where: { userId: teacherId } });
         if(existingTeacher){
             return res.status(400).json({ message: 'Teacher already exist' });
         }
@@ -20,7 +22,7 @@ const onboardTeacher = async (req, res)=>{
 
         const teacherProfile = await prisma.teacherProfile.create({ 
             data: {
-                teacherId,
+                userId: teacherId,
                 bio,
                 expertise,
                 experience,

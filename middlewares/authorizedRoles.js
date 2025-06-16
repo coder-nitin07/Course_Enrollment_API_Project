@@ -3,15 +3,15 @@
 const authorizedRoles = (allowedRoles)=>{
     return (req, res, next)=>{
         try {
-            const { role } = req.user;
+            const { userRole } = req.user;
 
-            if(!role){
+            if(!userRole){
                 return res.status(403).json({ message: 'Role is required.' });
             }
 
             const rolesArray = Array.isArray(allowedRoles) ? allowedRoles : [ allowedRoles ];
 
-            if(!rolesArray.includes(role)){
+            if(!rolesArray.includes(userRole)){
                 return res.status(404).json({ message: 'You are not authorized for this role.' });
             }
 
