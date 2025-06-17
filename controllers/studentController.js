@@ -39,5 +39,21 @@ const onboardStudent = async (req, res)=>{
     }
 };
 
+// Get Student Profile
+const getStudentProfile = async (req, res)=>{
+    try {
+        const studentId = req.user.userId;
 
-module.exports = { onboardStudent };
+        const studentProfile = await prisma.studentProfile.findUnique({ where:{ userId: studentId } });
+        if(!studentProfile){
+            return res.status(403).json({ message: 'Student not exist' });
+        }
+
+        res.status(200).json({ message: 'Student Profile Succesfully Fetched', profile: studentProfile }) ;
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+module.exports = { onboardStudent, getStudentProfile };
