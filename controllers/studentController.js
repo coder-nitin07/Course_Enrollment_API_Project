@@ -1,0 +1,43 @@
+// POST /student/onboard             (register or setup student profile)
+// GET  /student/courses             (get all courses student enrolled in)
+// GET  /student/profile             (get logged-in student's profile)       [optional]
+// PUT  /student/profile             (update student's profile)             [optional]
+
+const prisma = require("../config/prisma");
+
+
+// POST /enroll/:courseId            (enroll in a course)
+// DELETE /unenroll/:courseId        (unenroll/leave a course)
+
+// Create Student
+const onboardStudent = async (req, res)=>{
+    try {
+        const studentId = req.user.userId;
+
+        const existingStudent = await prisma.studentProfile.findUnique({ where: { userId: studentId } });
+        if(existingStudent){
+            return res.status(400).json({ message: 'Student Already exist' });
+        }
+
+        const { mobile, qualification, age, profilePicture, preferredLanguage } = req.body;
+
+        const studentProfile = await prisma.studentProfile.create({
+            data: {
+                userId: studentId,
+                mobile,
+                qualification,
+                age,
+                profilePicture,
+                preferredLanguage
+            }
+        });
+
+        res.status(201).json({ message: 'Student Profile Created Successfully', profile: studentProfile });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+
+module.exports = { onboardStudent };

@@ -1,6 +1,7 @@
 const express = require('express');
 const { authRouter } = require('./routes/authRoutes');
 const { teacherRouter } = require('./routes/teacherRoutes');
+const { studentRouter } = require('./routes/studentRoutes');
 const app = express();
 require('dotenv').config();
 
@@ -9,6 +10,7 @@ app.use(express.json());
 // routes
 app.use('/auth', authRouter);
 app.use('/teacher', teacherRouter);
+app.use('/student', studentRouter);
 
 app.get('/', (req, res)=>{
     res.send('Course Management API Proejct...');
