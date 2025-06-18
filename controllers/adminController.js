@@ -34,6 +34,54 @@ const addQualification = async (req, res)=>{
     }
 };
 
+// Update Qualification
+const updateQualification = async (req, res)=>{
+    try {
+        const id = Number(req.params.id);
+        const getQualification = await prisma.qualification.findUnique({ where : { id: id } });
+
+        if(!getQualification){
+            return res.status(400).json({ message: 'Qualification not found' });
+        }
+
+        const { name, level } = req.body;
+
+        const updatedQualification = await prisma.qualification.update({
+            where : { id: id },
+            data:{
+                name,
+                level
+            }
+        });
+
+        res.status(200).json({ message: 'Qualification Updated Successfully', qualification: updatedQualification });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+// Delete Qualification
+const deleteQualification = async (req, res)=>{
+    try {
+        const id = Number(req.params.id);
+        const getQualification = await prisma.qualification.findUnique({ where : { id: id } });
+
+        if(!getQualification){
+            return res.status(400).json({ message: 'Qualification not found' });
+        }
+
+        const deletedQualification = await prisma.qualification.delete({
+            where: { id: getQualification.id }
+        });
+
+        res.status(200).json({ message: 'Qualification Deleted Successfully', qualification: deletedQualification });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
 // Get All Qualification
 const getAllQualification = async (req, res)=>{
     try {
@@ -46,4 +94,4 @@ const getAllQualification = async (req, res)=>{
     }
 };
 
-module.exports = { addQualification, getAllQualification };
+module.exports = { addQualification, updateQualification, deleteQualification, getAllQualification };

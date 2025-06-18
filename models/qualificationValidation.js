@@ -18,4 +18,23 @@ const qualificationValidation = (req, res, next)=>{
     next();
 };
 
-module.exports = { qualificationValidation };
+
+const updateQualificationSchema = Joi.object({
+    name: Joi.string().min(2).max(100).trim().regex(/^[a-zA-Z0-9 .,&()-]+$/).messages({
+      'string.pattern.base': 'Qualification name can only contain letters, numbers, spaces, and common punctuation.',
+    }).optional(),
+
+    level: Joi.number().integer().min(1).max(100).optional()
+});
+
+const updateQualificationValidation = (req, res, next)=>{
+    const { error } = updateQualificationSchema.validate(req.body);
+
+    if(error){
+        return res.status(400).json({ message: error.details[0].message });
+    }
+
+    next();
+};
+
+module.exports = { qualificationValidation, updateQualificationValidation };
