@@ -62,13 +62,15 @@ model BlacklistedToken{
 }
 
 model Course {
-  id          Int          @id @default(autoincrement())
-  title       String
-  description String
-  createdAt   DateTime     @default(now())
-  teacherId   Int
-  teacher     User         @relation("TeacherCourses", fields: [teacherId], references: [id])
-  enrollments Enrollment[]
+  id                       Int          @id @default(autoincrement())
+  title                    String
+  description              String
+  minAge                   Int
+  requiredQualification    String
+  createdAt                DateTime     @default(now())
+  teacherId                Int
+  teacher                  User         @relation("TeacherCourses", fields: [teacherId], references: [id])
+  enrollments              Enrollment[]
 }
 
 model Enrollment {
