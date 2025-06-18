@@ -45,11 +45,13 @@ const createCourse = async (req, res)=>{
             return res.status(404).json({ message: 'Teacher not found' });
         }
 
-        const { title, description } = req.body;
+        const { title, description, minAge, requiredQualification } = req.body;
         const course = await prisma.course.create({
             data: {
                 title,
                 description,
+                minAge,
+                qualification: requiredQualification,
                 teacherId: teacher
             }
         });

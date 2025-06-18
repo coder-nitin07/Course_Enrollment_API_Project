@@ -2,6 +2,7 @@ const express = require('express');
 const { authRouter } = require('./routes/authRoutes');
 const { teacherRouter } = require('./routes/teacherRoutes');
 const { studentRouter } = require('./routes/studentRoutes');
+const { adminRouter } = require('./routes/adminRoutes');
 const app = express();
 require('dotenv').config();
 
@@ -9,6 +10,7 @@ app.use(express.json());
 
 // routes
 app.use('/auth', authRouter);
+app.use('/admin', adminRouter);
 app.use('/teacher', teacherRouter);
 app.use('/student', studentRouter);
 

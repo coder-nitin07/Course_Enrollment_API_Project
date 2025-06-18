@@ -27,6 +27,14 @@ model User{
   StudentProfile  StudentProfile?
 }
 
+model Qualification{
+  id              Int           @id @default(autoincrement())
+  name            String        
+  level           Int
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
 model TeacherProfile{
   id            Int            @id @default(autoincrement())
   user          User           @relation( fields: [ userId ], references: [ id ] )
