@@ -34,4 +34,16 @@ const addQualification = async (req, res)=>{
     }
 };
 
-module.exports = { addQualification };
+// Get All Qualification
+const getAllQualification = async (req, res)=>{
+    try {
+        const getQualifications = await prisma.qualification.findMany();
+
+        res.status(200).json({ message: 'All Qualifications Fetched', qualifications: getQualifications });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+module.exports = { addQualification, getAllQualification };
