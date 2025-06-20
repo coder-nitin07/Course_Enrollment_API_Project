@@ -33,6 +33,8 @@ model Qualification{
   level           Int
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
+
+  Course Course[]
 }
 
 model TeacherProfile{
@@ -70,14 +72,15 @@ model BlacklistedToken{
 }
 
 model Course {
-  id                       Int          @id @default(autoincrement())
+  id                       Int            @id @default(autoincrement())
   title                    String
   description              String
   minAge                   Int
-  requiredQualification    String
-  createdAt                DateTime     @default(now())
+  qualificationId          Int
+  qualification            Qualification  @relation(fields: [ qualificationId ], references: [ id ])
+  createdAt                DateTime       @default(now())
   teacherId                Int
-  teacher                  User         @relation("TeacherCourses", fields: [teacherId], references: [id])
+  teacher                  User           @relation("TeacherCourses", fields: [teacherId], references: [id])
   enrollments              Enrollment[]
 }
 

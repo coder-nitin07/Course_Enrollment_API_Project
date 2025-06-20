@@ -45,13 +45,15 @@ const createCourse = async (req, res)=>{
             return res.status(404).json({ message: 'Teacher not found' });
         }
 
-        const { title, description, minAge, requiredQualification } = req.body;
+        const { title, description, minAge, qualificationId } = req.body;
         const course = await prisma.course.create({
             data: {
                 title,
                 description,
                 minAge,
-                qualification: requiredQualification,
+                qualification: {
+                    connect: { id: qualificationId }
+                },
                 teacherId: teacher
             }
         });
@@ -79,11 +81,19 @@ const updateCourse = async (req, res)=>{
         }
 
 
-        const { title, description } = req.body;
+        const { title, description, qualificationId, minAge } = req.body;
 
         const updatedCourse = await prisma.course.update({
             where: { id: Number(id) },
-            data: { title, description }
+            data: { 
+                title, 
+                description, 
+                minAge,
+                qualifications: {
+                    connect: { id: qualificationId }
+                }
+
+             }
         });
 
         res.status(200).json({ message: 'Course Updated Successfully', course: updatedCourse });
@@ -120,11 +130,6 @@ const deleteCourse = async (req, res)=>{
 const getAllCourseOfTeacher = async (req, res)=>{
     try {
         const teacher = req.user.userId;
-
-        const getTeacher = await prisma.teacherProfile.findUnique({ where: { userId: teacher } });
-        if(!getTeacher){
-            return res.status(404).json({ message: 'Teacher not found' });
-        }
 
         const getAllCourse = await prisma.course.findMany({ where: { teacherId: teacher } });
         if(getAllCourse.length === 0){
