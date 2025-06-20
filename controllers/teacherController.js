@@ -39,8 +39,10 @@ const onboardTeacher = async (req, res)=>{
 const createCourse = async (req, res)=>{
     try {
         const teacher = req.user.userId;
-
+        console.log(req.user, "Ddddf")
+        console.log(teacher, "s")
         const getTeacher = await prisma.teacherProfile.findUnique({ where: { userId: teacher } });
+        console.log(getTeacher)
         if(!getTeacher){
             return res.status(404).json({ message: 'Teacher not found' });
         }
@@ -51,9 +53,7 @@ const createCourse = async (req, res)=>{
                 title,
                 description,
                 minAge,
-                qualification: {
-                    connect: { id: qualificationId }
-                },
+                qualificationId,
                 teacherId: teacher
             }
         });
@@ -143,4 +143,36 @@ const getAllCourseOfTeacher = async (req, res)=>{
     }
 };
 
-module.exports = { onboardTeacher, createCourse, updateCourse, deleteCourse, getAllCourseOfTeacher };
+// Get All courses
+const getAllCourse = async (req, res)=>{
+    try {
+        const getCourses = await prisma.course.findMany({
+              select: {
+                id: true,
+                title: true,
+                description: true,
+                minAge: true,
+                teacherId: true,
+                teacher: {
+                    select: {
+                        name: true,
+                        teacherProfile: {
+                            select: {
+                                bio: true,
+                                expertise: true,
+                                linkedin: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        res.status(200).json({ message: 'All courses fetched Successfully', courses: getCourses });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+module.exports = { onboardTeacher, createCourse, updateCourse, deleteCourse, getAllCourseOfTeacher, getAllCourse };
