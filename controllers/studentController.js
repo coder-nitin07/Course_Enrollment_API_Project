@@ -141,4 +141,48 @@ const enrollStudent = async (req, res)=>{
     }
 };
 
-module.exports = { onboardStudent, updateStudent, getStudentProfile, enrollStudent };
+// Get All Enrolled Course
+const getAllEnrolledCourse = async (req, res)=>{
+    try {
+        const studentId = req.user.userId;
+
+        const studentProfile = await prisma.studentProfile.findUnique({
+            where: { userId: studentId }
+        });
+
+        if(!studentProfile){
+            return res.status(404).json({ messsage: 'Student Profile not found' });
+        }
+
+        const getAllEnrollCouses = await prisma.enrollment.findMany({
+            where: { studentId },
+            include: {  
+                course: {
+                    select: {
+                        id: true,
+                        title: true,
+                        description: true,
+                        teacher: {
+                            select: {
+                                name: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if(getAllEnrollCouses.length == 0){
+            return res.status(404).json({ message: 'Not Courses found' });
+        }
+
+        res.status(200).json({ message: 'Successfully Fetched All Enroll Courses', courses: getAllEnrollCouses });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+
+
+module.exports = { onboardStudent, updateStudent, getStudentProfile, enrollStudent, getAllEnrolledCourse };
