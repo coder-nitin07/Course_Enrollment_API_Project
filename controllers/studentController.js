@@ -3,6 +3,15 @@
 // GET  /student/profile             (get logged-in student's profile)       [optional]
 // PUT  /student/profile             (update student's profile)             [optional]
 
+// POST /student/enroll/:courseId
+// → Student enrolls in a specific course.
+
+// DELETE /student/unenroll/:courseId
+// → Student can unenroll from a course.
+
+// GET /student/enrollments
+// → Student sees all their enrolled courses.
+
 const prisma = require("../config/prisma");
 
 
@@ -85,4 +94,51 @@ const updateStudent = async (req, res)=>{
     }
 };
 
-module.exports = { onboardStudent, updateStudent, getStudentProfile };
+// Enroll the student
+const enrollStudent = async (req, res)=>{
+    try {
+        const studentId = req.user.userId;
+        const courseId = parseInt(req.params.courseId);
+
+        if(isNaN(courseId)){
+            return res.status(404).json({ message: 'Invalid course Id.' })
+        }
+
+        const course = await prisma.course.findUnique({ where : { id: courseId } });
+        if(!course){
+            return res.status(404).json({ message: 'Course not found' });
+        }
+
+        const studentProfile = await prisma.studentProfile.findUnique({ where: { userId: studentId } });
+        if(!studentProfile){
+            return res.status(404).json({ message: 'Student Profile not found' });
+        }
+
+        const existingEnrollment = await prisma.enrollment.findUnique({
+            where: { 
+                studentId_courseId: {
+                    studentId,
+                    courseId,
+                },
+             },
+        });
+        if(existingEnrollment){
+            return res.status(409).json({ message: 'Already enrolled in this course' });
+        }
+
+        // Enrollment
+        const enrollment = await prisma.enrollment.create({ 
+            data: {
+                studentId,
+                courseId
+            }
+         })
+
+        res.status(200).json({ message: 'Student enroll successfully', course: enrollment });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+module.exports = { onboardStudent, updateStudent, getStudentProfile, enrollStudent };
