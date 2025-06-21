@@ -183,6 +183,30 @@ const getAllEnrolledCourse = async (req, res)=>{
     }
 };
 
+// Unenrolled form the Course
+const unerollStudent = async (req, res)=>{
+    try {
+        const studentId = req.user.userId;
+        const courseId = parseInt(req.params.courseId);
 
+        if(!courseId){
+            return res.status(400).json({ message: 'Course ID is required' });
+        }
 
-module.exports = { onboardStudent, updateStudent, getStudentProfile, enrollStudent, getAllEnrolledCourse };
+        await prisma.enrollment.delete({ 
+            where: {
+                studentId_courseId: {
+                    studentId,
+                    courseId
+                }
+            }
+        });
+
+        res.status(200).json({ message: 'Unenrolled from the course successfully' });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+module.exports = { onboardStudent, updateStudent, getStudentProfile, enrollStudent, getAllEnrolledCourse, unerollStudent };
