@@ -129,9 +129,17 @@ const deleteCourse = async (req, res)=>{
 // Get All course of a Teacher
 const getAllCourseOfTeacher = async (req, res)=>{
     try {
-        const teacher = req.user.userId;
+        const { teacherId } = req.params;
 
-        const getAllCourse = await prisma.course.findMany({ where: { teacherId: teacher } });
+        const getAllCourse = await prisma.course.findMany({
+            where: { teacherId: Number(teacherId) },
+            include: {
+                qualification: {
+                select: { name: true, level: true }
+                }
+            }
+        });
+
         if(getAllCourse.length === 0){
             return res.status(404).json({ message: 'No Course found' });
         }
@@ -174,5 +182,7 @@ const getAllCourse = async (req, res)=>{
         res.status(500).json({ message: 'Something went wrong' });
     }
 };
+
+
 
 module.exports = { onboardTeacher, createCourse, updateCourse, deleteCourse, getAllCourseOfTeacher, getAllCourse };

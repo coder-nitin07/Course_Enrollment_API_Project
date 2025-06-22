@@ -1,5 +1,5 @@
 const express = require('express');
-const { onboardTeacher, createCourse, getAllCourseOfTeacher, updateCourse, deleteCourse, getAllCourse } = require('../controllers/teacherController');
+const { onboardTeacher, createCourse, getAllCourseOfTeacher, updateCourse, deleteCourse, getAllCourse, unenrollStudent } = require('../controllers/teacherController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const authorizedRoles = require('../middlewares/authorizedRoles');
 const blacklistedToken = require('../middlewares/blacklistedToken');
@@ -9,7 +9,10 @@ teacherRouter.post('/onboard', blacklistedToken, authMiddleware, authorizedRoles
 teacherRouter.post('/createCourse', blacklistedToken, authMiddleware, authorizedRoles('TEACHER'), createCourse);
 teacherRouter.put('/updateCourse/:id', blacklistedToken, authMiddleware, authorizedRoles('TEACHER'), updateCourse);
 teacherRouter.delete('/deleteCourse/:id', blacklistedToken, authMiddleware, authorizedRoles('TEACHER'), deleteCourse);
-teacherRouter.get('/getAllCourseOfTeacher', getAllCourseOfTeacher);
+
+// Get Course
+teacherRouter.get('/getAllCourseOfTeacher/:teacherId', getAllCourseOfTeacher);
 teacherRouter.get('/getAllCourse', getAllCourse);
+
 
 module.exports = { teacherRouter };
