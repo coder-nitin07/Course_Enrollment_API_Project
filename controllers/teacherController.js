@@ -216,7 +216,12 @@ const unenrollStudent = async (req, res)=>{
             }
         });
 
-        res.status(200).json({ message: 'Student unerolled from the course successfully', student: deletedStudent  });
+        const studentUser = await prisma.user.findUnique({
+            where: { id: studentId },
+            select: { id: true, name: true }
+        });
+
+        res.status(200).json({ message: 'Student unerolled from the course successfully', student: studentUser  });
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: 'Something went wrong' });
