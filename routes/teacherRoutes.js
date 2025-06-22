@@ -14,5 +14,7 @@ teacherRouter.delete('/deleteCourse/:id', blacklistedToken, authMiddleware, auth
 teacherRouter.get('/getAllCourseOfTeacher/:teacherId', getAllCourseOfTeacher);
 teacherRouter.get('/getAllCourse', getAllCourse);
 
+// Unenroll student
+teacherRouter.post('/unenrollStudent', blacklistedToken, authMiddleware, authorizedRoles('TEACHER'), unenrollStudent);
 
 module.exports = { teacherRouter };

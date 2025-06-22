@@ -183,6 +183,44 @@ const getAllCourse = async (req, res)=>{
     }
 };
 
+// Unenroll the Student
+const unenrollStudent = async (req, res)=>{
+    try {
+        const teacher = req.user.userId;
+        const { studentId, courseId } = req.body;
+        console.log("ss")
+        if(!studentId || !courseId){
+            return res.status(400).json({ message: 'Please filled all the required fields.' });
+        }
 
+        const existingCourse = await prisma.course.findUnique({ where: { id: courseId } });
+        if(!existingCourse){
+            return res.status(400).json({ message: 'Course not found' });
+        }
 
-module.exports = { onboardTeacher, createCourse, updateCourse, deleteCourse, getAllCourseOfTeacher, getAllCourse };
+        const existingStudent = await prisma.studentProfile.findUnique({ where: { userId: studentId } });
+        if(!existingStudent){
+            return res.status(400).json({ message: 'Student not found' });
+        }
+
+        if(existingCourse.teacherId !== teacher){
+            return res.status(403).json({ message: 'You are not authorized for this role.' });
+        }
+
+        const deletedStudent = await prisma.enrollment.delete({
+            where: {
+                studentId_courseId: {
+                    studentId,
+                    courseId
+                }
+            }
+        });
+
+        res.status(200).json({ message: 'Student unerolled from the course successfully', student: deletedStudent  });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+module.exports = { onboardTeacher, createCourse, updateCourse, deleteCourse, getAllCourseOfTeacher, getAllCourse, unenrollStudent };
