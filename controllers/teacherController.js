@@ -188,7 +188,7 @@ const unenrollStudent = async (req, res)=>{
     try {
         const teacher = req.user.userId;
         const { studentId, courseId } = req.body;
-        console.log("ss")
+        
         if(!studentId || !courseId){
             return res.status(400).json({ message: 'Please filled all the required fields.' });
         }

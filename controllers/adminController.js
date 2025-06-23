@@ -4,6 +4,7 @@
 // 4. PUT /admin/user/:id/role – Change user role (e.g., student → teacher)
 // 5. DELETE /admin/user/:id – Delete a user
 
+const { Prisma } = require("@prisma/client");
 const prisma = require("../config/prisma");
 
 
@@ -94,4 +95,40 @@ const getAllQualification = async (req, res)=>{
     }
 };
 
-module.exports = { addQualification, updateQualification, deleteQualification, getAllQualification };
+// Unenroll Student from any course
+const unenrollStudentByAdmin = async (req, res)=>{
+    try {
+        const admin = req.user.userId;
+        const { studentId, courseId } = req.body;
+
+        if(!studentId || !courseId){
+            return res.status(400).json({ message: 'Please filled all the required fields.' });
+        }
+
+        const existingCourse = await prisma.course.findUnique({ where: { id: courseId } });
+        if(!existingCourse){
+            return res.status(400).json({ message: 'Course not found' });
+        }
+
+        const existingStudent = await prisma.studentProfile.findUnique({ where: { userId: studentId } });
+        if(!existingStudent){
+            return res.status(400).json({ message: 'Student not found' });
+        }
+
+        const deletedStudent = await prisma.enrollment.delete({
+            where: {
+                studentId_courseId: {
+                    studentId,
+                    courseId
+                }
+            }
+        });
+
+        res.status(200).json({ message: 'Student Unenrolled from the course successfully', course: deletedStudent });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+module.exports = { addQualification, updateQualification, deleteQualification, getAllQualification, unenrollStudentByAdmin };
