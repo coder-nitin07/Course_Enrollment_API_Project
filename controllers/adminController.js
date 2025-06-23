@@ -131,4 +131,33 @@ const unenrollStudentByAdmin = async (req, res)=>{
     }
 };
 
-module.exports = { addQualification, updateQualification, deleteQualification, getAllQualification, unenrollStudentByAdmin };
+// Get All Users
+const getAllUsers = async (req, res)=>{
+    try {
+        const { role } = req.query;
+        const userId = req.user.userId;
+
+        const getAllUsers = await prisma.user.findMany({
+            where: role ? { role } : {},
+            where: { id: { not: userId } },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+                createdAt: true
+            }
+        });
+        
+        if(getAllUsers.length == 0){
+            return res.status(400).json({ message: 'No Uses found' });
+        }
+
+        res.status(200).json({ message: 'All Users Fetched', users: getAllUsers });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+module.exports = { addQualification, updateQualification, deleteQualification, getAllQualification, unenrollStudentByAdmin, getAllUsers };

@@ -25,6 +25,8 @@ model User{
   enrollment      Enrollment[]
   teacherProfile  TeacherProfile?
   StudentProfile  StudentProfile?
+
+  createdAt       DateTime      @default(now())
 }
 
 model Qualification{
