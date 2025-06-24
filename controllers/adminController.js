@@ -132,30 +132,62 @@ const unenrollStudentByAdmin = async (req, res)=>{
 };
 
 // Get All Users
-const getAllUsers = async (req, res)=>{
+const getAllUsers = async (req, res) => {
     try {
-        const { role } = req.query;
         const userId = req.user.userId;
+        const {
+            role,
+            search = '',
+            sortBy = 'createdAt',
+            order = 'desc',
+            page = 1,
+            limit = 10
+        } = req.query;
 
-        const getAllUsers = await prisma.user.findMany({
-            where: role ? { role } : {},
-            where: { id: { not: userId } },
+        // Build filters
+        const filters = {
+            id: { not: userId } // Exclude current admin
+        };
+
+        if (role) {
+            filters.role = role.toUpperCase();
+        }
+
+        if (search) {
+            filters.OR = [
+                { name: { contains: search, mode: 'insensitive' } },
+                { email: { contains: search, mode: 'insensitive' } }
+            ];
+        }
+
+        const users = await prisma.user.findMany({
+            where: filters,
+            orderBy: {
+                [sortBy]: order === 'asc' ? 'asc' : 'desc'
+            },
+            skip: (parseInt(page) - 1) * parseInt(limit),
+            take: parseInt(limit),
             select: {
                 id: true,
                 name: true,
                 email: true,
                 role: true,
+                isActive: true,
                 createdAt: true
             }
         });
-        
-        if(getAllUsers.length == 0){
-            return res.status(400).json({ message: 'No Uses found' });
-        }
 
-        res.status(200).json({ message: 'All Users Fetched', users: getAllUsers });
+        const totalCount = await prisma.user.count({ where: filters });
+
+        res.status(200).json({
+            message: 'All Users Fetched',
+            totalUsers: totalCount,
+            currentPage: parseInt(page),
+            totalPages: Math.ceil(totalCount / limit),
+            users
+        });
     } catch (err) {
-        console.log(err);
+        console.error(err);
         res.status(500).json({ message: 'Something went wrong' });
     }
 };
