@@ -2,7 +2,7 @@ const express = require('express');
 const authMiddleware = require('../middlewares/authMiddleware');
 const blacklistedToken = require('../middlewares/blacklistedToken');
 const authorizedRoles = require('../middlewares/authorizedRoles');
-const { addQualification, getAllQualification, updateQualification, deleteQualification, unenrollStudentByAdmin, getAllUsers } = require('../controllers/adminController');
+const { addQualification, getAllQualification, updateQualification, deleteQualification, unenrollStudentByAdmin, getAllUsers, isActive } = require('../controllers/adminController');
 const { qualificationValidation, updateQualificationValidation } = require('../models/qualificationValidation');
 
 const adminRouter = express.Router();
@@ -15,6 +15,7 @@ adminRouter.get('/qualifications', getAllQualification);
 // Unerolled student
 adminRouter.put('/unenrollStudent1', blacklistedToken, authMiddleware, authorizedRoles('ADMIN'), unenrollStudentByAdmin);
 
+adminRouter.put('/isActive/:id', blacklistedToken, authMiddleware, authorizedRoles('ADMIN'), isActive);
 adminRouter.get('/getAllUsers', blacklistedToken, authMiddleware, authorizedRoles('ADMIN'), getAllUsers);
 
 module.exports = { adminRouter };

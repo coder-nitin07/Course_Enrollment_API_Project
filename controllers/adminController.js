@@ -131,6 +131,35 @@ const unenrollStudentByAdmin = async (req, res)=>{
     }
 };
 
+// Activate or Deactivate a student or teacher
+const isActive = async (req, res)=>{
+    try {
+        const userId = req.user.userId;
+        const { id } = req.params;
+        const { isActive } = req.body;
+
+        console.log(typeof id, "ssssssss");
+        const users = await prisma.user.findUnique({ where: { id: Number(id) } });
+
+        if(!users){
+            return res.status(400).json({ message: 'User not found' });
+        }
+
+        console.log(typeof id, "ss");
+        const userStatus = await prisma.user.update({
+            where : { id: Number(id) },
+            data:{
+                isActive
+            }
+        });
+
+        res.status(200).json({ message: 'User Status Updated', user: userStatus });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
 // Get All Users
 const getAllUsers = async (req, res) => {
     try {
@@ -192,4 +221,4 @@ const getAllUsers = async (req, res) => {
     }
 };
 
-module.exports = { addQualification, updateQualification, deleteQualification, getAllQualification, unenrollStudentByAdmin, getAllUsers };
+module.exports = { addQualification, updateQualification, deleteQualification, getAllQualification, unenrollStudentByAdmin, isActive, getAllUsers };
