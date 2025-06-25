@@ -1,4 +1,3 @@
-
 // Check Status of the User
 const checkActieStatus = (req, res, next)=>{
     try {

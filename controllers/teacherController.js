@@ -1,9 +1,3 @@
-// POST /teacher/onboard (register or setup teacher profile)
-// GET /teacher/courses (get all teacher's courses)
-// POST /teacher/course (create a course)
-// PUT /teacher/course/:id (update course)
-// DELETE /teacher/course/:id (delete course)
-
 const prisma = require("../config/prisma");
 
 // Create Teacher

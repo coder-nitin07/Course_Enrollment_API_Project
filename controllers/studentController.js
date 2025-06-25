@@ -1,22 +1,4 @@
-// POST /student/onboard             (register or setup student profile)
-// GET  /student/courses             (get all courses student enrolled in)
-// GET  /student/profile             (get logged-in student's profile)       [optional]
-// PUT  /student/profile             (update student's profile)             [optional]
-
-// POST /student/enroll/:courseId
-// → Student enrolls in a specific course.
-
-// DELETE /student/unenroll/:courseId
-// → Student can unenroll from a course.
-
-// GET /student/enrollments
-// → Student sees all their enrolled courses.
-
 const prisma = require("../config/prisma");
-
-
-// POST /enroll/:courseId            (enroll in a course)
-// DELETE /unenroll/:courseId        (unenroll/leave a course)
 
 // Create Student
 const onboardStudent = async (req, res)=>{
